@@ -227,7 +227,6 @@ export default function HomePage() {
         {/* Navbar */}
         <nav className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-5 sm:pt-6 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <span className="text-3xl sm:text-4xl">📖</span>
             <span className="text-white font-extrabold text-2xl sm:text-3xl tracking-tight" style={{ fontFamily: "var(--font-baloo)" }}>
               KataKita
             </span>
@@ -290,7 +289,7 @@ export default function HomePage() {
                 {gamePhase === "loading" ? (
                   <><span className="animate-spin text-xl">⟳</span><span>Menyiapkan Kata...</span></>
                 ) : gamePhase === "welcome" ? (
-                  <><span className="text-2xl">🚀</span><span>Mulai Latihan Sekarang!</span></>
+                  <><span className="text-2xl"></span><span>Mulai Latihan Sekarang!</span></>
                 ) : (
                   <><span className="text-2xl">🔄</span><span>Latihan Baru</span></>
                 )}
@@ -367,7 +366,7 @@ export default function HomePage() {
               <div className="card w-full">
                 <div className="mb-4">
                   <h2 className="text-lg sm:text-xl font-extrabold text-blue-900 mb-1" style={{ fontFamily: "var(--font-baloo)" }}>
-                    🎯 Pilih Tantangan Latihan
+                     Pilih Tantangan Latihan
                   </h2>
                   <p className="text-gray-500 text-xs sm:text-sm">Pilih pola yang ingin kamu latih hari ini</p>
                 </div>
@@ -426,7 +425,7 @@ export default function HomePage() {
                     className="btn-blue btn-large w-full justify-center font-extrabold text-base sm:text-lg"
                   >
                     {gamePhase === "welcome" ? (
-                      <><span className="text-2xl">🚀</span><span>Mulai Latihan!</span></>
+                      <><span className="text-2xl"></span><span>Mulai Latihan!</span></>
                     ) : gamePhase === "loading" ? (
                       <><span className="animate-spin text-xl">⟳</span><span>Menyiapkan kata...</span></>
                     ) : (
