@@ -252,16 +252,16 @@ jumlah_benar: ${jumlahBenar}`;
     let ringkasan: string;
     let saran: string;
 
-    if (persentase >= 80) {
-      ringkasan = `Luar biasa! Dari ${totalSoal} kata latihan, ${jumlahBenar} sudah tepat. Terus semangat berlatih ya! 🌟`;
+    if (persentase > 90) {
+      ringkasan = `Luar biasa (⭐⭐⭐)! Dari ${totalSoal} kata latihan, ${jumlahBenar} sudah tepat. Terus semangat berlatih ya! 🌟`;
       saran =
         "Coba latihan dengan kata-kata baru besok untuk memperkuat kemampuan yang sudah bagus ini.";
-    } else if (persentase >= 50) {
-      ringkasan = `Bagus! Dari ${totalSoal} kata, ${jumlahBenar} sudah tepat. Beberapa kata masih butuh latihan lagi, dan itu wajar banget di tahap belajar ini. 😊`;
+    } else if (persentase >= 75) {
+      ringkasan = `Bagus sekali (⭐⭐)! Dari ${totalSoal} kata, ${jumlahBenar} sudah tepat. Beberapa kata masih butuh latihan lagi, dan itu wajar banget di tahap belajar ini. 😊`;
       saran =
         "Ulangi latihan ini 2-3 kali dengan kata yang berbeda, sambil ajak anak mengucapkan huruf yang mirip satu per satu.";
     } else {
-      ringkasan = `Keren sudah mencoba! Dari ${totalSoal} kata, ${jumlahBenar} sudah tepat. Ini baru awal latihan — semakin sering berlatih, semakin lancar! 💪`;
+      ringkasan = `Keren sudah mencoba (⭐)! Dari ${totalSoal} kata, ${jumlahBenar} sudah tepat. Ini baru awal latihan — semakin sering berlatih, semakin lancar! 💪`;
       saran =
         "Lakukan latihan singkat ini setiap hari selama 5-10 menit. Konsistensi lebih penting dari durasi panjang.";
     }

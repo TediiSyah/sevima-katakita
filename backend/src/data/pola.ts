@@ -1,4 +1,4 @@
-import { PolaTarget, SoalLatihan } from "@/types";
+import { PolaTarget, SoalLatihan } from "../types";
 
 // ============================================================
 // Daftar Pola Target

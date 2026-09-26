@@ -7,7 +7,10 @@ import PolaSelector from "@/components/PolaSelector";
 import KartuSoal from "@/components/KartuSoal";
 import KartuProgresComponent from "@/components/KartuProgres";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import GamificationBar from "@/components/GamificationBar";
+import MascotCharacter, { MascotMood } from "@/components/MascotCharacter";
 import { getApiUrl } from "@/lib/api-config";
+import { sfx } from "@/lib/soundEffects";
 
 // ============================================================
 // Helper: acak urutan opsi jawaban untuk setiap sesi
@@ -39,14 +42,34 @@ export default function HomePage() {
     "welcome"
   );
   const [fromFallback, setFromFallback] = useState(false);
+
+  // State Gamifikasi
+  const [bintang, setBintang] = useState(0);
+  const [comboStreak, setComboStreak] = useState(0);
+  const [floatingScore, setFloatingScore] = useState<number | null>(null);
+  const [mascotMood, setMascotMood] = useState<MascotMood>("idle");
+  const [mascotSpeech, setMascotSpeech] = useState<string>(
+    "Halo sahabat! Aku Kiko, siap menemanimu belajar kata seru!"
+  );
+
   const gameRef = useRef<HTMLDivElement>(null);
+
+  // Callback ganti ekspresi maskot dari anak komponen
+  const handleMascotMoodChange = useCallback((mood: MascotMood, speech?: string) => {
+    setMascotMood(mood);
+    if (speech) setMascotSpeech(speech);
+  }, []);
 
   // ——————————————————————————————————
   // Generate soal dari AI (atau fallback)
   // ——————————————————————————————————
   const generateSoal = useCallback(
     async (pola: PolaTarget) => {
+      sfx.playPop();
       setGamePhase("loading");
+      setMascotMood("thinking");
+      setMascotSpeech("Kiko sedang meminta bantuan AI menyiapkan kata-kata baru...");
+
       setSesi((prev) => ({
         ...prev,
         pola_target: pola,
@@ -57,6 +80,7 @@ export default function HomePage() {
         error: null,
       }));
       setSoalAktifIdx(0);
+      setComboStreak(0);
       setFromFallback(false);
 
       try {
@@ -88,6 +112,8 @@ export default function HomePage() {
         }));
         setFromFallback(!data.from_ai);
         setGamePhase("game");
+        setMascotMood("idle");
+        setMascotSpeech("Kata baru sudah siap! Tekan tombol dengarkan ya!");
       } catch {
         // Fallback ke soal statis
         const fallback =
@@ -102,6 +128,8 @@ export default function HomePage() {
         }));
         setFromFallback(true);
         setGamePhase("game");
+        setMascotMood("idle");
+        setMascotSpeech("Kata-kata sudah siap! Ayo kita mulai dengarkan!");
       }
     },
     []
@@ -121,6 +149,8 @@ export default function HomePage() {
         kartu_progres: null,
       }));
       setGamePhase("progres");
+      setMascotMood("celebrate");
+      setMascotSpeech("Hebat sekali! Kiko sedang merangkum kartu apresiasimu...");
 
       try {
         const res = await fetch(getApiUrl("/api/kartu-progres"), {
@@ -148,16 +178,16 @@ export default function HomePage() {
         let ringkasan: string;
         let saran: string;
 
-        if (persentase >= 80) {
-          ringkasan = `Luar biasa! Dari ${totalSoal} kata latihan, ${jumlahBenar} sudah tepat. Semangat terus berlatih ya! 🌟`;
+        if (persentase > 90) {
+          ringkasan = `Luar biasa (⭐⭐⭐)! Dari ${totalSoal} kata latihan, ${jumlahBenar} sudah tepat. Semangat terus berlatih ya! 🌟`;
           saran =
             "Coba latihan dengan kata-kata baru besok untuk terus memperkuat kemampuan yang sudah bagus ini.";
-        } else if (persentase >= 50) {
-          ringkasan = `Bagus! Dari ${totalSoal} kata, ${jumlahBenar} sudah tepat. Beberapa kata masih butuh latihan lagi, dan itu wajar banget di tahap belajar ini. 😊`;
+        } else if (persentase >= 75) {
+          ringkasan = `Bagus sekali (⭐⭐)! Dari ${totalSoal} kata, ${jumlahBenar} sudah tepat. Beberapa kata masih butuh latihan lagi, dan itu wajar banget di tahap belajar ini. 😊`;
           saran =
             "Ulangi latihan ini 2-3 kali dengan kata yang berbeda, sambil ajak anak mengucapkan huruf yang mirip satu per satu.";
         } else {
-          ringkasan = `Keren sudah mencoba! Dari ${totalSoal} kata, ${jumlahBenar} sudah tepat. Ini baru awal latihan — semakin sering berlatih, semakin lancar! 💪`;
+          ringkasan = `Keren sudah mencoba (⭐)! Dari ${totalSoal} kata, ${jumlahBenar} sudah tepat. Ini baru awal latihan — semakin sering berlatih, semakin lancar! 💪`;
           saran =
             "Lakukan latihan singkat ini setiap hari selama 5-10 menit. Konsistensi lebih penting dari durasi yang panjang.";
         }
@@ -187,6 +217,17 @@ export default function HomePage() {
         benar,
       };
 
+      // Tambah bintang & hitung combo
+      if (benar) {
+        const poinDidapat = 10 + (comboStreak >= 1 ? comboStreak * 5 : 0);
+        setBintang((prev) => prev + poinDidapat);
+        setComboStreak((prev) => prev + 1);
+        setFloatingScore(poinDidapat);
+        setTimeout(() => setFloatingScore(null), 1200);
+      } else {
+        setComboStreak(0);
+      }
+
       const jawabanBaruList = [...sesi.jawaban_anak, jawabanBaru];
       const isLastSoal = soalAktifIdx >= sesi.daftar_soal.length - 1;
 
@@ -202,7 +243,7 @@ export default function HomePage() {
         setSoalAktifIdx((prev) => prev + 1);
       }
     },
-    [sesi, soalAktifIdx, generateProgres]
+    [sesi, soalAktifIdx, comboStreak, generateProgres]
   );
 
   // ——————————————————————————————————
@@ -218,6 +259,7 @@ export default function HomePage() {
   const handleGantiPola = useCallback(
     (pola: PolaTarget) => {
       setPolaTerpilih(pola);
+      sfx.playPop();
     },
     []
   );
@@ -239,9 +281,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen">
-      {/* ——————————————————————————————————
-          Background decorasi mengambang
-      —————————————————————————————————— */}
+      {/* Background Decor */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
         <div className="absolute top-20 left-10 text-6xl floating opacity-20 select-none">📚</div>
         <div className="absolute top-40 right-16 text-5xl floating-delayed opacity-15 select-none">✏️</div>
@@ -255,40 +295,51 @@ export default function HomePage() {
         {/* ——————————————————————————————————
             HERO HEADER
         —————————————————————————————————— */}
-        <header className="text-center py-4">
-          <div className="flex justify-center mb-3">
-            <div className="relative">
-              <span className="text-6xl floating select-none">📖</span>
-              <span className="absolute -top-1 -right-2 text-2xl floating-delayed select-none">✨</span>
-            </div>
+        <header className="text-center py-2">
+          <div className="flex justify-center mb-2">
+            <MascotCharacter
+              mood={mascotMood}
+              speechText={mascotSpeech}
+              size="md"
+            />
           </div>
           <h1
-            className="text-4xl font-extrabold mb-2"
+            className="text-4xl font-extrabold mb-1"
             style={{ fontFamily: "var(--font-baloo)" }}
           >
-            <span className="text-gradient">Generator Latihan</span>
-            <br />
-            <span className="text-gray-800">Pola Baca-Tulis</span>
+            <span className="text-gradient">KataKita</span>
+            <span className="text-gray-800"> — Sahabat Latihan Baca-Tulis</span>
           </h1>
-          <p className="text-gray-600 text-lg max-w-md mx-auto leading-relaxed">
-            Latihan baca-tulis yang seru dan tepat sasaran,{" "}
-            <strong>disesuaikan dengan pola</strong> yang sudah diketahui orang tua atau guru.
+          <p className="text-gray-600 text-base max-w-md mx-auto leading-relaxed">
+            Latihan membaca & mengeja adaptif ramah anak, didukung kecerdasan buatan Gemini AI.
           </p>
         </header>
 
         {/* ——————————————————————————————————
-            CATATAN ETIS (wajib tampil)
+            BAR GAMIFIKASI (Bintang & Combo)
+        —————————————————————————————————— */}
+        {(gamePhase === "game" || gamePhase === "progres" || bintang > 0) && (
+          <GamificationBar
+            bintang={bintang}
+            comboStreak={comboStreak}
+            soalAktif={Math.min(soalAktifIdx + 1, sesi.daftar_soal.length || 6)}
+            totalSoal={sesi.daftar_soal.length || 6}
+            floatingScore={floatingScore}
+          />
+        )}
+
+        {/* ——————————————————————————————————
+            CATATAN ETIS
         —————————————————————————————————— */}
         <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-4 border border-blue-100 flex gap-3">
           <span className="text-2xl flex-shrink-0 mt-0.5">ℹ️</span>
           <div>
-            <p className="text-blue-800 font-semibold text-sm mb-1">
+            <p className="text-blue-800 font-semibold text-sm mb-0.5">
               Alat bantu latihan, bukan alat diagnosis
             </p>
-            <p className="text-blue-700 text-sm leading-relaxed">
+            <p className="text-blue-700 text-xs sm:text-sm leading-relaxed">
               Aplikasi ini membantu melatih pola baca-tulis yang <em>sudah diketahui atau dicurigai</em>{" "}
-              oleh orang tua, guru, atau psikolog — bukan untuk menyimpulkan kondisi apa pun dari anak.
-              Setiap soal yang dihasilkan AI selalu baru dan berbeda supaya latihan terus efektif.
+              oleh orang tua atau guru. Soal bervariasi setiap kali dibuat agar latihan terus menyenangkan.
             </p>
           </div>
         </div>
@@ -313,17 +364,17 @@ export default function HomePage() {
               {gamePhase === "welcome" ? (
                 <>
                   <span className="text-2xl">🚀</span>
-                  <span>Mulai Latihan!</span>
+                  <span>Mulai Latihan Baru!</span>
                 </>
               ) : gamePhase === "loading" ? (
                 <>
                   <span className="animate-spin text-xl">⟳</span>
-                  <span>Sedang menyiapkan...</span>
+                  <span>Sedang menyiapkan kata...</span>
                 </>
               ) : (
                 <>
                   <span className="text-2xl">🔄</span>
-                  <span>Latihan Baru</span>
+                  <span>Latihan Baru (Kata Berbeda)</span>
                 </>
               )}
             </button>
@@ -332,63 +383,40 @@ export default function HomePage() {
               <button
                 id="btn-lihat-progres"
                 onClick={() => {
-                  if (sesi.jawaban_anak.length >= 5) {
+                  if (sesi.jawaban_anak.length >= 3) {
                     generateProgres(sesi.jawaban_anak, sesi.pola_target.nama);
                   } else {
                     alert(
-                      `Selesaikan minimal 5 soal dulu ya! Baru ${sesi.jawaban_anak.length} soal selesai.`
+                      `Selesaikan minimal 3 kata dulu ya! Baru ${sesi.jawaban_anak.length} kata selesai.`
                     );
                   }
                 }}
-                disabled={sesi.jawaban_anak.length < 5 || gamePhase === "progres"}
+                disabled={sesi.jawaban_anak.length < 3 || gamePhase === "progres"}
                 className="btn btn-secondary btn-large sm:flex-initial flex-1 justify-center"
               >
                 <span className="text-xl">📊</span>
-                <span>Lihat Kartu Progres</span>
+                <span>Kartu Progres</span>
               </button>
             )}
           </div>
 
-          {/* Mini progres tracker */}
-          {gamePhase === "game" && sesi.daftar_soal.length > 0 && (
-            <div className="mt-4 pt-4 border-t border-gray-100">
-              <div className="flex justify-between text-sm text-gray-500 mb-2">
-                <span>
-                  Soal {Math.min(soalAktifIdx + 1, sesi.daftar_soal.length)} dari{" "}
-                  {sesi.daftar_soal.length}
-                </span>
-                <span className="text-green-600 font-semibold">
-                  ✅ {jumlahBenar} benar
-                </span>
-              </div>
-              <div className="progress-bar">
-                <div
-                  className="progress-fill"
-                  style={{
-                    width: `${(sesi.jawaban_anak.length / sesi.daftar_soal.length) * 100}%`,
-                  }}
-                />
-              </div>
-            </div>
-          )}
-
           {/* Indikator fallback */}
           {fromFallback && gamePhase === "game" && (
-            <div className="mt-3 flex items-center gap-2 text-xs text-amber-600 bg-amber-50 rounded-xl px-3 py-2">
+            <div className="mt-3 flex items-center gap-2 text-xs text-amber-700 bg-amber-50 rounded-xl px-3 py-2 border border-amber-200">
               <span>⚠️</span>
               <span>
-                Menggunakan soal cadangan (AI tidak tersedia). Soal tetap beragam dan efektif.
+                Menggunakan bank kata cadangan (offline mode). Kata tetap variatif dan efektif.
               </span>
             </div>
           )}
         </div>
 
         {/* ——————————————————————————————————
-            AREA GAME
+            AREA GAME UTAMA
         —————————————————————————————————— */}
         <div ref={gameRef}>
           {gamePhase === "loading" && (
-            <LoadingSpinner message="AI sedang membuat soal latihan baru..." />
+            <LoadingSpinner message="AI Gemini sedang merancang kata-kata baru..." />
           )}
 
           {gamePhase === "game" && soalAktif && (
@@ -398,13 +426,15 @@ export default function HomePage() {
                 soal={soalAktif}
                 nomorSoal={soalAktifIdx + 1}
                 totalSoal={sesi.daftar_soal.length}
+                comboStreak={comboStreak}
                 onJawab={handleJawab}
+                onMascotMoodChange={handleMascotMoodChange}
               />
             </div>
           )}
 
           {gamePhase === "progres" && sesi.loading_progres && (
-            <LoadingSpinner message="AI sedang menyiapkan kartu progres..." />
+            <LoadingSpinner message="AI sedang merangkum apresiasi kartu progres..." />
           )}
 
           {gamePhase === "progres" && !sesi.loading_progres && sesi.kartu_progres && (
@@ -412,7 +442,10 @@ export default function HomePage() {
               progres={sesi.kartu_progres}
               totalSoal={sesi.jawaban_anak.length}
               jumlahBenar={jumlahBenar}
+              bintang={bintang}
               polaNama={sesi.pola_target.nama}
+              daftarSoal={sesi.daftar_soal}
+              jawabanAnak={sesi.jawaban_anak}
               onLatihanBaru={handleLatihanBaru}
               loading={sesi.loading_soal}
             />
@@ -424,29 +457,27 @@ export default function HomePage() {
         —————————————————————————————————— */}
         {gamePhase === "welcome" && (
           <div className="card text-center py-8 animate-fade-in">
-            <div className="text-5xl mb-4 floating select-none">🎮</div>
             <h2
-              className="text-2xl font-bold text-gray-800 mb-3"
+              className="text-2xl font-bold text-gray-800 mb-2"
               style={{ fontFamily: "var(--font-baloo)" }}
             >
-              Siap Mulai Berlatih?
+              Cara Asyik Bermain & Belajar
             </h2>
-            <p className="text-gray-500 mb-6 max-w-sm mx-auto">
+            <p className="text-gray-500 mb-6 max-w-sm mx-auto text-sm">
               Pilih pola latihan di atas, lalu tekan{" "}
-              <strong className="text-yellow-600">Mulai Latihan</strong> — AI akan
-              langsung membuatkan soal-soal baru khusus untukmu!
+              <strong className="text-amber-600">Mulai Latihan Baru</strong> untuk mendengar kata dan mengumpulkan bintang!
             </p>
 
-            {/* Cara main */}
-            <div className="grid grid-cols-3 gap-3 max-w-sm mx-auto text-center">
+            {/* Langkah bermain */}
+            <div className="grid grid-cols-3 gap-3 max-w-md mx-auto text-center">
               {[
-                { icon: "🎯", label: "Pilih pola kesulitan" },
-                { icon: "👂", label: "Dengarkan katanya" },
-                { icon: "✅", label: "Pilih ejaan yang tepat" },
+                { icon: "🎯", label: "Pilih Pola Latihan" },
+                { icon: "🔊", label: "Dengarkan Kata" },
+                { icon: "⭐", label: "Kumpulkan Bintang" },
               ].map((step, i) => (
-                <div key={i} className="bg-gray-50 rounded-2xl p-3">
+                <div key={i} className="bg-amber-50/50 border border-amber-100 rounded-2xl p-3">
                   <div className="text-2xl mb-1">{step.icon}</div>
-                  <div className="text-xs text-gray-600 font-medium leading-tight">
+                  <div className="text-xs text-gray-700 font-bold leading-tight">
                     {step.label}
                   </div>
                 </div>
@@ -458,13 +489,9 @@ export default function HomePage() {
         {/* ——————————————————————————————————
             FOOTER
         —————————————————————————————————— */}
-        <footer className="text-center text-xs text-gray-400 pb-4 space-y-1">
-          <p>
-            🌟 Dibuat untuk mendukung SDG 4 — Pendidikan Berkualitas
-          </p>
-          <p>
-            Generator soal bertenaga AI untuk latihan Bahasa Indonesia yang terus bervariasi
-          </p>
+        <footer className="text-center text-xs text-gray-400 pb-6 space-y-1">
+          <p>🌟 Dibuat untuk mendukung SDG 4 — Pendidikan Berkualitas</p>
+          <p>Platform Latihan Membaca & Mengeja Adaptif Berbasis AI</p>
         </footer>
       </div>
     </div>
