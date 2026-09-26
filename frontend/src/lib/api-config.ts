@@ -4,7 +4,7 @@
  *   frontend akan memanggil Node.js Express Backend terpisah.
  * - Jika tidak diset / kosong, frontend akan memanggil Next.js API Routes internal ('/api/...').
  */
-export const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
+export const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "";
 
 export function getApiUrl(endpoint: string): string {
   const cleanEndpoint = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
