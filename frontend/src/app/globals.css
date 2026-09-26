@@ -1,0 +1,235 @@
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Nunito:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-baloo: 'Baloo 2', cursive;
+  --font-nunito: 'Nunito', sans-serif;
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: var(--font-nunito), sans-serif;
+    background: linear-gradient(135deg, #fef9c3 0%, #dbeafe 35%, #f0fdf4 65%, #faf5ff 100%);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  /* ——————————————————————————————————
+     Kartu / Card
+  —————————————————————————————————— */
+  .card {
+    @apply bg-white rounded-3xl shadow-card p-6 transition-all duration-300;
+  }
+
+  .card-hover {
+    @apply hover:shadow-card-hover hover:-translate-y-1 cursor-pointer;
+  }
+
+  /* ——————————————————————————————————
+     Tombol
+  —————————————————————————————————— */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 font-bold rounded-2xl px-6 py-3
+           transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed
+           shadow-btn select-none;
+  }
+
+  .btn-primary {
+    @apply btn bg-gradient-to-r from-yellow-400 to-yellow-500 text-yellow-900
+           hover:from-yellow-300 hover:to-yellow-400 hover:shadow-btn-hover;
+  }
+
+  .btn-secondary {
+    @apply btn bg-gradient-to-r from-blue-400 to-blue-500 text-white
+           hover:from-blue-300 hover:to-blue-400 hover:shadow-btn-hover;
+  }
+
+  .btn-success {
+    @apply btn bg-gradient-to-r from-green-400 to-green-500 text-white
+           hover:from-green-300 hover:to-green-400 hover:shadow-btn-hover;
+  }
+
+  .btn-soft {
+    @apply btn bg-white text-gray-700 border-2 border-gray-200
+           hover:border-blue-300 hover:bg-blue-50;
+  }
+
+  .btn-large {
+    @apply px-8 py-4 text-xl rounded-3xl;
+  }
+
+  .btn-xl {
+    @apply px-10 py-5 text-2xl rounded-3xl;
+  }
+
+  /* ——————————————————————————————————
+     Tombol Opsi Jawaban
+  —————————————————————————————————— */
+  .btn-opsi {
+    @apply w-full text-center font-bold text-xl py-4 px-6 rounded-2xl border-3
+           transition-all duration-200 active:scale-95 cursor-pointer
+           bg-white hover:scale-105;
+    border-width: 3px;
+  }
+
+  .btn-opsi-default {
+    @apply btn-opsi border-blue-200 text-blue-800 hover:border-blue-400 hover:bg-blue-50;
+  }
+
+  .btn-opsi-benar {
+    @apply btn-opsi border-green-400 bg-green-50 text-green-800 animate-bounce-gentle;
+  }
+
+  .btn-opsi-salah {
+    @apply btn-opsi border-amber-300 bg-amber-50 text-amber-800;
+  }
+
+  .btn-opsi-disabled {
+    @apply btn-opsi border-gray-200 text-gray-400 cursor-default hover:scale-100;
+  }
+
+  /* ——————————————————————————————————
+     Animasi Kartu
+  —————————————————————————————————— */
+  .card-soal-enter {
+    animation: scaleIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  /* ——————————————————————————————————
+     Progress Bar
+  —————————————————————————————————— */
+  .progress-bar {
+    @apply h-3 rounded-full bg-gray-100 overflow-hidden;
+  }
+
+  .progress-fill {
+    @apply h-full rounded-full bg-gradient-to-r from-yellow-400 to-green-400
+           transition-all duration-500 ease-out;
+  }
+
+  /* ——————————————————————————————————
+     Badge / Chip
+  —————————————————————————————————— */
+  .badge {
+    @apply inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-semibold;
+  }
+
+  .badge-info {
+    @apply badge bg-blue-100 text-blue-700;
+  }
+
+  .badge-success {
+    @apply badge bg-green-100 text-green-700;
+  }
+
+  .badge-warning {
+    @apply badge bg-yellow-100 text-yellow-700;
+  }
+
+  /* ——————————————————————————————————
+     Gradient Text
+  —————————————————————————————————— */
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-yellow-500 via-orange-400 to-pink-500;
+  }
+
+  .text-gradient-blue {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500;
+  }
+
+  /* ——————————————————————————————————
+     Floating elements (dekorasi)
+  —————————————————————————————————— */
+  .floating {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .floating-delayed {
+    animation: float 3s ease-in-out 1.5s infinite;
+  }
+}
+
+@layer utilities {
+  .border-3 {
+    border-width: 3px;
+  }
+
+  .text-shadow {
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+}
+
+/* ——————————————————————————————————
+   Custom Keyframes
+—————————————————————————————————— */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes starBurst {
+  0% { transform: scale(0) rotate(0deg); opacity: 1; }
+  100% { transform: scale(1.5) rotate(180deg); opacity: 0; }
+}
+
+/* ——————————————————————————————————
+   Confetti Stars overlay
+—————————————————————————————————— */
+.star-pop {
+  position: fixed;
+  pointer-events: none;
+  font-size: 2rem;
+  animation: starBurst 0.8s ease-out forwards;
+  z-index: 9999;
+}
+
+/* ——————————————————————————————————
+   Scrollbar styling
+—————————————————————————————————— */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+/* ——————————————————————————————————
+   Responsive fixes
+—————————————————————————————————— */
+@media (max-width: 640px) {
+  .btn-xl {
+    @apply px-6 py-4 text-xl;
+  }
+
+  .btn-large {
+    @apply px-5 py-3 text-lg;
+  }
+}
