@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Nunito:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Nunito:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -7,35 +7,75 @@
 :root {
   --font-baloo: 'Baloo 2', cursive;
   --font-nunito: 'Nunito', sans-serif;
+
+  /* KataKita Brand Colors — inspired by Study.Pilot */
+  --blue-primary: #1B6FEF;
+  --blue-dark:    #0D4FBB;
+  --blue-deeper:  #0B3E99;
+  --blue-glow:    #3B8FFF;
+  --orange-cta:   #F5A623;
+  --orange-hover: #E8941A;
+  --white-card:   #FFFFFF;
 }
 
 @layer base {
   * {
     box-sizing: border-box;
   }
-  
-  body {
-    font-family: var(--font-nunito), sans-serif;
-    background: linear-gradient(135deg, #fef9c3 0%, #dbeafe 35%, #f0fdf4 65%, #faf5ff 100%);
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
 
   html {
     scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: var(--font-nunito), sans-serif;
+    background: var(--blue-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
   }
 }
 
 @layer components {
   /* ——————————————————————————————————
-     Kartu / Card
+     Hero Background Layer (Blue Gradient)
+  —————————————————————————————————— */
+  .hero-bg {
+    background: linear-gradient(145deg, #0D4FBB 0%, #1B6FEF 40%, #2E7FF5 70%, #1B6FEF 100%);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ——————————————————————————————————
+     Main Content Area (Putih ke Abu)
+  —————————————————————————————————— */
+  .main-content-bg {
+    background: linear-gradient(180deg, #EEF4FF 0%, #F5F8FF 50%, #EEF4FF 100%);
+    min-height: 60vh;
+  }
+
+  /* ——————————————————————————————————
+     Kartu / Card (Putih Bersih)
   —————————————————————————————————— */
   .card {
-    @apply bg-white rounded-3xl shadow-card p-6 transition-all duration-300;
+    @apply bg-white rounded-3xl p-6 transition-all duration-300;
+    box-shadow: 0 12px 40px rgba(27, 111, 239, 0.12), 0 4px 12px rgba(0,0,0,0.06);
   }
 
   .card-hover {
-    @apply hover:shadow-card-hover hover:-translate-y-1 cursor-pointer;
+    @apply hover:-translate-y-1 cursor-pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .card-hover:hover {
+    box-shadow: 0 20px 60px rgba(27, 111, 239, 0.18), 0 8px 24px rgba(0,0,0,0.10);
+  }
+
+  /* Kartu Transparan di atas Blue */
+  .card-glass {
+    background: rgba(255,255,255,0.12);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.25);
+    @apply rounded-3xl p-6 transition-all duration-300;
   }
 
   /* ——————————————————————————————————
@@ -44,27 +84,61 @@
   .btn {
     @apply inline-flex items-center justify-center gap-2 font-bold rounded-2xl px-6 py-3
            transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed
-           shadow-btn select-none;
+           select-none;
   }
 
+  /* Tombol Oranye CTA (Primary action) */
   .btn-primary {
-    @apply btn bg-gradient-to-r from-yellow-400 to-yellow-500 text-yellow-900
-           hover:from-yellow-300 hover:to-yellow-400 hover:shadow-btn-hover;
+    background: linear-gradient(135deg, #F5A623 0%, #E8941A 100%);
+    color: #ffffff;
+    @apply btn shadow-lg;
+    box-shadow: 0 8px 24px rgba(245, 166, 35, 0.45);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.15);
+  }
+  .btn-primary:hover {
+    background: linear-gradient(135deg, #FFB733 0%, #F5A623 100%);
+    box-shadow: 0 12px 32px rgba(245, 166, 35, 0.55);
+    transform: translateY(-1px);
   }
 
+  /* Tombol Putih di atas Blue */
   .btn-secondary {
-    @apply btn bg-gradient-to-r from-blue-400 to-blue-500 text-white
-           hover:from-blue-300 hover:to-blue-400 hover:shadow-btn-hover;
+    background: rgba(255,255,255,0.15);
+    color: #ffffff;
+    border: 2px solid rgba(255,255,255,0.35);
+    @apply btn;
+    backdrop-filter: blur(8px);
+  }
+  .btn-secondary:hover {
+    background: rgba(255,255,255,0.25);
+    border-color: rgba(255,255,255,0.55);
+  }
+
+  /* Tombol Biru di atas Putih */
+  .btn-blue {
+    background: linear-gradient(135deg, #1B6FEF 0%, #0D4FBB 100%);
+    color: #ffffff;
+    @apply btn shadow-md;
+    box-shadow: 0 6px 20px rgba(27, 111, 239, 0.40);
+  }
+  .btn-blue:hover {
+    background: linear-gradient(135deg, #2E7FF5 0%, #1B6FEF 100%);
+    box-shadow: 0 10px 28px rgba(27, 111, 239, 0.50);
+    transform: translateY(-1px);
   }
 
   .btn-success {
-    @apply btn bg-gradient-to-r from-green-400 to-green-500 text-white
-           hover:from-green-300 hover:to-green-400 hover:shadow-btn-hover;
+    @apply btn bg-gradient-to-r from-green-400 to-emerald-500 text-white shadow-md;
+  }
+  .btn-success:hover {
+    box-shadow: 0 8px 24px rgba(34,197,94,0.40);
   }
 
   .btn-soft {
-    @apply btn bg-white text-gray-700 border-2 border-gray-200
-           hover:border-blue-300 hover:bg-blue-50;
+    @apply btn bg-white text-blue-700 border-2 border-blue-100 shadow-sm;
+  }
+  .btn-soft:hover {
+    @apply border-blue-300 bg-blue-50;
   }
 
   .btn-large {
@@ -76,33 +150,47 @@
   }
 
   /* ——————————————————————————————————
-     Tombol Opsi Jawaban
+     Opsi Jawaban
   —————————————————————————————————— */
-  .btn-opsi {
-    @apply w-full text-center font-bold text-xl py-4 px-6 rounded-2xl border-3
-           transition-all duration-200 active:scale-95 cursor-pointer
-           bg-white hover:scale-105;
-    border-width: 3px;
-  }
-
   .btn-opsi-default {
-    @apply btn-opsi border-blue-200 text-blue-800 hover:border-blue-400 hover:bg-blue-50;
+    @apply w-full text-center font-bold text-xl py-4 px-6 rounded-2xl cursor-pointer
+           bg-white text-blue-900 transition-all duration-200 active:scale-95;
+    border: 2.5px solid #BFDBFE;
+    box-shadow: 0 4px 12px rgba(27,111,239,0.08);
+  }
+  .btn-opsi-default:hover {
+    border-color: var(--blue-primary);
+    background: #EEF4FF;
+    box-shadow: 0 6px 20px rgba(27,111,239,0.15);
+    transform: translateY(-2px);
   }
 
   .btn-opsi-benar {
-    @apply btn-opsi border-green-400 bg-green-50 text-green-800 animate-bounce-gentle;
+    @apply w-full text-center font-bold text-xl py-4 px-6 rounded-2xl;
+    border: 2.5px solid #22c55e;
+    background: #f0fdf4;
+    color: #15803d;
+    box-shadow: 0 6px 20px rgba(34,197,94,0.25);
+    animation: bounceGentle 0.5s ease-out;
   }
 
   .btn-opsi-salah {
-    @apply btn-opsi border-amber-300 bg-amber-50 text-amber-800;
+    @apply w-full text-center font-bold text-xl py-4 px-6 rounded-2xl;
+    border: 2.5px solid #FBBF24;
+    background: #fffbeb;
+    color: #92400e;
   }
 
   .btn-opsi-disabled {
-    @apply btn-opsi border-gray-200 text-gray-400 cursor-default hover:scale-100;
+    @apply w-full text-center font-bold text-xl py-4 px-6 rounded-2xl;
+    border: 2.5px solid #e5e7eb;
+    background: #f9fafb;
+    color: #9ca3af;
+    cursor: default;
   }
 
   /* ——————————————————————————————————
-     Animasi Kartu
+     Kartu Soal Masuk
   —————————————————————————————————— */
   .card-soal-enter {
     animation: scaleIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -112,22 +200,40 @@
      Progress Bar
   —————————————————————————————————— */
   .progress-bar {
-    @apply h-3 rounded-full bg-gray-100 overflow-hidden;
+    @apply h-3 rounded-full overflow-hidden;
+    background: rgba(255,255,255,0.25);
+  }
+
+  .progress-bar-light {
+    @apply h-3 rounded-full overflow-hidden bg-blue-100;
   }
 
   .progress-fill {
-    @apply h-full rounded-full bg-gradient-to-r from-yellow-400 to-green-400
-           transition-all duration-500 ease-out;
+    @apply h-full rounded-full transition-all duration-500 ease-out;
+    background: linear-gradient(90deg, #F5A623 0%, #FFD166 100%);
+    box-shadow: 0 0 8px rgba(245,166,35,0.5);
+  }
+
+  .progress-fill-blue {
+    @apply h-full rounded-full transition-all duration-500 ease-out;
+    background: linear-gradient(90deg, #1B6FEF 0%, #60A5FA 100%);
   }
 
   /* ——————————————————————————————————
      Badge / Chip
   —————————————————————————————————— */
   .badge {
-    @apply inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-semibold;
+    @apply inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-bold;
   }
 
   .badge-info {
+    background: rgba(255,255,255,0.2);
+    color: #ffffff;
+    border: 1px solid rgba(255,255,255,0.3);
+    @apply badge backdrop-blur-sm;
+  }
+
+  .badge-info-light {
     @apply badge bg-blue-100 text-blue-700;
   }
 
@@ -136,29 +242,40 @@
   }
 
   .badge-warning {
-    @apply badge bg-yellow-100 text-yellow-700;
+    @apply badge bg-amber-100 text-amber-700;
   }
 
   /* ——————————————————————————————————
      Gradient Text
   —————————————————————————————————— */
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-yellow-500 via-orange-400 to-pink-500;
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, #F5A623 0%, #FFD166 50%, #FFEB99 100%);
   }
 
   .text-gradient-blue {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500;
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, #1B6FEF 0%, #60A5FA 100%);
   }
 
   /* ——————————————————————————————————
-     Floating elements (dekorasi)
+     Floating & Geometric Shapes
   —————————————————————————————————— */
   .floating {
     animation: float 3s ease-in-out infinite;
   }
-
   .floating-delayed {
     animation: float 3s ease-in-out 1.5s infinite;
+  }
+  .floating-slow {
+    animation: float 5s ease-in-out 0.8s infinite;
+  }
+
+  /* ——————————————————————————————————
+     Bubble Speech Mascot
+  —————————————————————————————————— */
+  .animate-bounce-subtle {
+    animation: bounceSoft 2s ease-in-out infinite;
   }
 }
 
@@ -166,9 +283,11 @@
   .border-3 {
     border-width: 3px;
   }
-
   .text-shadow {
-    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+  .text-shadow-sm {
+    text-shadow: 0 1px 3px rgba(0,0,0,0.15);
   }
 }
 
@@ -177,22 +296,49 @@
 —————————————————————————————————— */
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-8px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes bounceSoft {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-4px); }
 }
 
 @keyframes scaleIn {
-  from {
-    transform: scale(0.8);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
+  from { transform: scale(0.85); opacity: 0; }
+  to   { transform: scale(1);    opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(24px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes bounceGentle {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.12); }
+  70%  { transform: scale(0.96); }
+  100% { transform: scale(1); }
+}
+
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25%       { transform: rotate(-8deg); }
+  75%       { transform: rotate(8deg); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(245, 166, 35, 0); }
+  50%       { box-shadow: 0 0 20px 8px rgba(245, 166, 35, 0.35); }
 }
 
 @keyframes starBurst {
-  0% { transform: scale(0) rotate(0deg); opacity: 1; }
+  0%   { transform: scale(0) rotate(0deg); opacity: 1; }
   100% { transform: scale(1.5) rotate(180deg); opacity: 0; }
 }
 
@@ -210,26 +356,79 @@
 /* ——————————————————————————————————
    Scrollbar styling
 —————————————————————————————————— */
-::-webkit-scrollbar {
-  width: 6px;
-}
-::-webkit-scrollbar-track {
-  background: #f1f5f9;
-}
-::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 3px;
-}
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #e0eaff; }
+::-webkit-scrollbar-thumb { background: #93C5FD; border-radius: 3px; }
 
 /* ——————————————————————————————————
    Responsive fixes
 —————————————————————————————————— */
 @media (max-width: 640px) {
-  .btn-xl {
-    @apply px-6 py-4 text-xl;
+  .btn-xl { @apply px-6 py-4 text-xl; }
+  .btn-large { @apply px-5 py-3 text-lg; }
+}
+
+/* Sembunyikan icon/indikator Next.js di pojok layar */
+nextjs-portal,
+[data-nextjs-dev-tools-button],
+[data-nextjs-toast-wrapper],
+[data-nextjs-dev-tools],
+[data-nextjs-dialog-overlay] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* ——————————————————————————————————
+   Print / PDF Certificate Styles
+   (Memastikan hanya sertifikat yang tercetak bersih & berwarna penuh)
+—————————————————————————————————— */
+@media print {
+  @page {
+    size: auto;
+    margin: 8mm;
   }
 
-  .btn-large {
-    @apply px-5 py-3 text-lg;
+  html, body {
+    background: #ffffff !important;
+    color: #111827 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+
+  /* Sembunyikan semua elemen selain sertifikat */
+  body * {
+    visibility: hidden !important;
+  }
+
+  /* Tampilkan hanya kartu sertifikat dan isinya */
+  #printable-sertifikat,
+  #printable-sertifikat * {
+    visibility: visible !important;
+  }
+
+  #printable-sertifikat {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 24px !important;
+    background: #ffffff !important;
+    border: 4px dashed #f59e0b !important;
+    border-radius: 20px !important;
+    box-shadow: none !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
   }
 }
+
+

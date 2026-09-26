@@ -1,39 +1,44 @@
 "use client";
 
-interface LoadingSpinnerProps {
-  message?: string;
-}
+import React from "react";
 
-export default function LoadingSpinner({
-  message = "Membuat soal latihan baru...",
-}: LoadingSpinnerProps) {
+export default function LoadingSpinner({ message = "Sedang memuat..." }: { message?: string }) {
   return (
-    <div className="card text-center py-12 animate-fade-in">
-      {/* Animated mascot */}
-      <div className="flex justify-center mb-6">
-        <div className="relative">
-          <div className="text-6xl animate-bounce">🤖</div>
-          <div className="absolute -top-2 -right-2 text-2xl floating">✨</div>
+    <div className="card py-12 text-center animate-fade-in">
+      {/* Spinner Biru */}
+      <div className="flex justify-center mb-5">
+        <div className="relative w-16 h-16">
+          <div
+            className="w-16 h-16 rounded-full border-4 border-blue-100 border-t-blue-600 animate-spin"
+          />
+          <div className="absolute inset-0 flex items-center justify-center text-2xl floating">
+            🤖
+          </div>
         </div>
       </div>
 
-      {/* Loading dots */}
-      <div className="flex justify-center gap-2 mb-4">
+      <p className="text-blue-700 font-bold text-base">{message}</p>
+      <p className="text-gray-400 text-sm mt-1">Ini hanya sebentar, sabar ya!</p>
+
+      {/* Animated dots */}
+      <div className="flex justify-center gap-1.5 mt-4">
         {[0, 1, 2].map((i) => (
           <div
             key={i}
-            className="w-3 h-3 rounded-full bg-gradient-to-r from-yellow-400 to-orange-400"
+            className="w-2 h-2 rounded-full bg-blue-400"
             style={{
-              animation: `bounce 0.8s ${i * 0.2}s ease-in-out infinite`,
+              animation: `bounce 1.2s ease-in-out ${i * 0.2}s infinite`,
             }}
           />
         ))}
       </div>
 
-      <p className="text-gray-600 text-lg font-semibold">{message}</p>
-      <p className="text-gray-400 text-sm mt-2">
-        AI sedang menyiapkan soal latihan yang variatif...
-      </p>
+      <style jsx>{`
+        @keyframes bounce {
+          0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
+          40% { transform: scale(1.2); opacity: 1; }
+        }
+      `}</style>
     </div>
   );
 }

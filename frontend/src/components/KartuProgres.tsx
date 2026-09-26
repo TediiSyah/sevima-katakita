@@ -209,7 +209,7 @@ export default function KartuProgresComponent({
             sfx.playPop();
             setShowSertifikat(true);
           }}
-          className="btn btn-secondary flex-1 justify-center py-3.5 text-base shadow-md"
+          className="btn btn-blue flex-1 justify-center py-3.5 text-base shadow-md font-extrabold"
         >
           <span className="text-xl">🏅</span>
           <span>Lihat Sertifikat Apresiasi</span>
